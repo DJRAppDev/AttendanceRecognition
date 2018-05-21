@@ -22,6 +22,8 @@ import com.android.volley.toolbox.Volley;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!osisField.getText().toString().equals("")) {
                     dispatchTakePictureIntent(osisField.getText().toString());
+                    try {
+                        addStudent(imageToBase64(studentPath), osisField.getText().toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
@@ -82,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
     private File createImageFile(String OSIS) throws IOException {
         // Create an image file name
         String imageFileName = OSIS;
@@ -98,10 +104,17 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
+    //Function to convert image into Base64
+    public String imageToBase64(String imagePath) throws IOException {
+        File image = new File(imagePath);
+        byte[] bytes = Files.readAllBytes(image.toPath());
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
     //Functions to enroll and verify different faces
     public void addStudent(final String image, final String OSIS) {
         String url = "https://api.kairos.com/enroll";
-        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+        Request postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -113,17 +126,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        Log.d("Error.Response", error.getMessage());
+                        Log.d("Error Response", error.getMessage());
                     }
-                }
-        ) {
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("image", image);
-                params.put("subject_id", OSIS);
+                params.put("image", "https://commons.wikimedia.org/wiki/File:Xi_Jinping_October_2013_(cropped)_(cropped).jpg");
+                params.put("subject_id", "207337288");
                 params.put("gallery_name", "Students");
-
                 return params;
             }
 
