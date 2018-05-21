@@ -129,11 +129,12 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("Error Response", error.getMessage());
                     }
                 }) {
+            //TODO: Fix this code block or else the app is unusable (may need to switch to Retrofit).
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("image", "https://commons.wikimedia.org/wiki/File:Xi_Jinping_October_2013_(cropped)_(cropped).jpg");
-                params.put("subject_id", "207337288");
+                params.put("image", image);
+                params.put("subject_id", OSIS);
                 params.put("gallery_name", "Students");
                 return params;
             }
