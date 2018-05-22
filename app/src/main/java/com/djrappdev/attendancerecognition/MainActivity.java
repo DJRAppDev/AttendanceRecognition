@@ -17,8 +17,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
                     dispatchTakePictureIntent(osisField.getText().toString());
                     try {
                         addStudent(imageToBase64(studentPath), osisField.getText().toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -112,14 +117,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Functions to enroll and verify different faces
-    public void addStudent(final String image, final String OSIS) {
+    public void addStudent(final String image, final String OSIS) throws JSONException {
         String url = "https://api.kairos.com/enroll";
-        Request postRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+        JSONObject request = new JSONObject();
+        request.put("image", image);
+        request.put("subject_id", OSIS);
+        request.put("gallery_name", "Students");
+        Request postRequest = new JsonObjectRequest(Request.Method.POST, url, request,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         // response
-                        Log.d("Response", response);
+                        Log.d("Response", response.toString());
                     }
                 },
                 new Response.ErrorListener() {
@@ -130,14 +139,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }) {
             //TODO: Fix this code block or else the app is unusable (may need to switch to Retrofit).
-            @Override
+            /*@Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("image", image);
                 params.put("subject_id", OSIS);
                 params.put("gallery_name", "Students");
                 return params;
-            }
+            }*/
 
             @Override
             public Map<String, String> getHeaders() {
