@@ -32,13 +32,12 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private final String app_id;
-    private final String app_key;
+    private final String app_id = "";
+    private final String app_key = "";
     private RequestQueue queue;
-    private Button addStudent;
-    private Button takePhoto;
+    private Button addStudent, takePhoto, verifyStudent;
     private String studentPath;
-    private TextView statusText;
+    private TextView statusText, verifyResult;
     private EditText osisField;
 
 
@@ -51,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         statusText = findViewById(R.id.attendanceStatus);
         osisField = findViewById(R.id.osisField);
         takePhoto = findViewById(R.id.takePhoto);
+        verifyStudent = findViewById(R.id.verifyStudent);
+        verifyResult = findViewById(R.id.verifyResult);
 
         queue = Volley.newRequestQueue(this);
 
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("Error Response", error.getMessage());
                     }
                 }) {
-            //TODO: Fix this code block or else the app is unusable (may need to switch to Retrofit).
+            //Old code that is obsoleted by JSONObject above. If anyone can find a way to fix it, much appreciated!
             /*@Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -157,6 +158,41 @@ public class MainActivity extends AppCompatActivity {
                 return params;
             }*/
 
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("app_id", app_id);
+                headers.put("app_key", app_key);
+                return headers;
+            }
+        };
+        queue.add(postRequest);
+    }
+
+    public void verifyStudent(final String image) throws JSONException {
+        String url = "https://api.kairos.com/recognize";
+        JSONObject request = new JSONObject();
+        request.put("gallery_name", "Students");
+        request.put("image", image);
+        Request postRequest = new JsonObjectRequest(Request.Method.POST, url, request,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    //TODO: Case checking so app knows what to do with the verification response from Kairos API.
+                    public void onResponse(JSONObject response) {
+                        // response
+                        Log.d("Response", response.toString());
+                        if (true) {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.d("Error Response", error.getMessage());
+                    }
+                }) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
