@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private final String app_key = "1f30faa8bbb6406231731963e9129191";
     private RequestQueue queue;
     private Button addStudent;
+    private Button takePhoto;
     private String studentPath;
     private TextView statusText;
     private EditText osisField;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         addStudent = findViewById(R.id.addStudent);
         statusText = findViewById(R.id.attendanceStatus);
         osisField = findViewById(R.id.osisField);
+        takePhoto = findViewById(R.id.takePhoto);
 
         queue = Volley.newRequestQueue(this);
 
@@ -57,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!osisField.getText().toString().equals("")) {
-                    dispatchTakePictureIntent(osisField.getText().toString());
                     try {
                         addStudent(imageToBase64(studentPath), osisField.getText().toString());
                     } catch (JSONException e) {
@@ -67,6 +68,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+            }
+        });
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!osisField.getText().toString().equals("")) {
+                    dispatchTakePictureIntent(osisField.getText().toString());
+                }
             }
         });
     }
