@@ -32,8 +32,8 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private final String app_id = "858c50a3";
-    private final String app_key = "1f30faa8bbb6406231731963e9129191";
+    private final String app_id;
+    private final String app_key;
     private RequestQueue queue;
     private Button addStudent;
     private Button takePhoto;
