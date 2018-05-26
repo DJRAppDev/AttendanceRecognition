@@ -32,8 +32,8 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private final String app_id = "";
-    private final String app_key = "";
+    private final String app_id = "858c50a3";
+    private final String app_key = "1f30faa8bbb6406231731963e9129191";
     private RequestQueue queue;
     private Button addStudent, takePhoto, verifyStudent;
     private String studentPath;
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(this);
 
-        //TODO: Prompt user to type in OSIS so student can be enrolled and finish image to base64 conversion
+        //Adds OnClickListener for adding students
         addStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,11 +71,27 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        //Adds OnClickListener to take a photo
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!osisField.getText().toString().equals("")) {
                     dispatchTakePictureIntent(osisField.getText().toString());
+                }
+            }
+        });
+
+        //Adds method to verify students
+        verifyStudent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    verifyStudent(imageToBase64(studentPath));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -175,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
         JSONObject request = new JSONObject();
         request.put("gallery_name", "Students");
         request.put("image", image);
+        //Hardcoded test
+        //request.put("image","https://upload.wikimedia.org/wikipedia/commons/2/25/Xi_Jinping_October_2013_%28cropped%29_%28cropped%29.jpg");
         Request postRequest = new JsonObjectRequest(Request.Method.POST, url, request,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -182,7 +200,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         // response
                         Log.d("Response", response.toString());
-                        if (true) {
+                        try {
+                            Log.d("Response", "" + response.getJSONArray("Errors").getJSONObject(0).getInt("ErrCode"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
