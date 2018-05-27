@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         takePhoto = findViewById(R.id.takePhoto);
         verifyStudent = findViewById(R.id.verifyStudent);
         verifyResult = findViewById(R.id.verifyResult);
-        mCallApiButton = findViewById(R.id.sheetsAPI);
+        //mCallApiButton = findViewById(R.id.sheetsAPI);
 
         queue = Volley.newRequestQueue(this);
 
@@ -142,17 +142,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        //Adds OnClickListener to connect to Google Sheets API
+        //Adds OnClickListener to connect to Google Sheets API (Used for testing purposes now unneeded)
+        /*
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verifyResult.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(false);
             }
         });
-
-        verifyResult.setText("Click the Google Sheets API button first.");
+        */
 
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
@@ -390,16 +389,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     @Override
                     //TODO: Case checking so app knows what to do with the verification response from Kairos API.
                     public void onResponse(JSONObject response) {
-                        // response Add to spreadsheets
-                        Log.d("Response123", response.toString());
-                        //globalOsis = PUT OSIS HERE;
-                        getResultsFromApi();
+                        // response
+                        String jsonString = response.toString();
 
-                        try {
-                            Log.d("Response", "" + response.getJSONArray("Errors").getJSONObject(0).getInt("ErrCode"));
-                            verifyResult.setText("Internal Error!");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        if(jsonString.indexOf("subject_id") != -1){
+                            String parsedOSIS = jsonString.substring(jsonString.indexOf("subject_id") + 15, jsonString.indexOf("subject_id") + 24);
+                            globalOsis = parsedOSIS;
+                            getResultsFromApi();
+                        }
+                        else if(jsonString.indexOf("5004") != -1){
+                            verifyResult.setText("Gallery name not found!");
+                        }
+                        else if(jsonString.indexOf("5002") != -1){
+                            verifyResult.setText("No faces found in the image!");
                         }
                     }
                 },
@@ -511,7 +513,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         @Override
         protected void onPreExecute() {
-            verifyResult.setText("");
         }
 
         @Override
